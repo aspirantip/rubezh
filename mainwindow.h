@@ -25,6 +25,7 @@ typedef cv::Point3_<uint8_t> Pixel;
 #include <sys/time.h>
 
 #include "case_thread.h"
+#include "direader.h"
 
 
 using namespace std;
@@ -65,6 +66,8 @@ private:
     QTimer timerBlockSystem;
     QVector<QLabel*> arrCamera;
     QList<QString> lstAccessKeys;
+
+    DIReader DevReader;
 
     void CreateConnection();
     void CreateWindowBlockSystem();

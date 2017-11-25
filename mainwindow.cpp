@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -17,22 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->lblVideo_2->setAlignment(Qt::AlignCenter);
     ui->lblVideo_3->setAlignment(Qt::AlignCenter);
     ui->wdgCamera->setAlignment(Qt::AlignCenter);
-    /*
-    if (f_Camera)
-        this->setCentralWidget( ui->wdgCamera );
-    else
-        this->setCentralWidget( ui->widget );
-    */
 
-/*
-    QLabel *lblFirst  = new QLabel;
-    QLabel *lblSecond = new QLabel;
-    lblFirst->setAlignment(Qt::AlignCenter);
-    lblFirst->setText("First page");
-    lblFirst->setMaximumSize(500, 400);
-    lblSecond->setAlignment(Qt::AlignCenter);
-    lblSecond->setText("Second page");
-*/
     stackedWidgets = new QStackedWidget;
     stackedWidgets->addWidget(ui->widget);
     stackedWidgets->addWidget(ui->wdgCamera);
@@ -40,18 +26,19 @@ MainWindow::MainWindow(QWidget *parent) :
     stackedWidgets->setCurrentIndex(0);
 
 
-
-
     CreateConnection();
     CreateWindowBlockSystem();
 
     getAccessKeys();
     thread.start();
+    DevReader.start();
 }
 
 MainWindow::~MainWindow()
 {
     f_stream = true;
+    DevReader.exit();
+
     delete ui;
 }
 
@@ -289,7 +276,7 @@ void MainWindow::slStartCamera()
             }
         }
 
-        waitKey(1);
+        waitKey(100);
     }
 
     qDebug() << "Finished stream_video";
@@ -378,7 +365,6 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
     if (event->type() == QEvent::KeyPress || event->type() == QEvent::MouseMove ||
         event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseButtonRelease){
-        //qDebug() << "eventFilter() |" << event->type();
 
         if (timerBlockSystem.isActive())
             timerBlockSystem.start();
