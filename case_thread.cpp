@@ -77,13 +77,18 @@ void CaseThread::run()
                     4 - 'B'
                     5-12 - коды радиобрелка
             */
-            QString tmpS = QString("F=%1   M=%2   U=%3V  S=").arg(uint(inData[1])).arg(uint(inData[2])).arg(double(inData[3]/10.0));
+            //QString tmpS = QString("F=%1   M=%2   U=%3V  S=").arg(uint(inData[1])).arg(uint(inData[2])).arg(double(inData[3]/10.0));
+
+            if (uint(inData[1]) == 1)
+                emit sgPressedFire();
+
             QString strAccessKey;
-            for(int i=0;i<8;i++){
+            for(int i = 0; i < 8; i++){
                 strAccessKey += QString("%1 ").arg(uint(inData[5+i]),3,16);
             }
-            tmpS += strAccessKey;
-            emit State(tmpS);
+            //tmpS += strAccessKey;
+            //emit sgState(tmpS);
+
 
             if (strLastAccessKey != strAccessKey){
                 strLastAccessKey = strAccessKey;

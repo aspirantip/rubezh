@@ -44,10 +44,14 @@ MainWindow::~MainWindow()
 
 void MainWindow::CreateConnection()
 {
-    connect(ui->actionCamera,   &QAction::triggered, this, &MainWindow::slStartCamera);
-    connect(&timerBlockSystem,  &QTimer::timeout, this, &MainWindow::slBlockAccess);
+    connect(ui->actionCamera,   &QAction::triggered,            this, &MainWindow::slStartCamera);
+    connect(&timerBlockSystem,  &QTimer::timeout,               this, &MainWindow::slBlockAccess);
     connect(&thread,            &CaseThread::sgLowVoltage,      this, &MainWindow::slLowVoltage);
     connect(&thread,            &CaseThread::sgCriticalVoltage, this, &MainWindow::slCriticalVoltage);
+    connect(&thread,            &CaseThread::sgPressedFire,     this, &MainWindow::slChangeModeShowObject);
+
+    connect(&DevReader,         &DIReader::sgSelectObject,      this, &MainWindow::slSelectObject);
+    connect(&DevReader,         &DIReader::sgSelectCamera,      this, &MainWindow::slSelectCamera);
 
 }
 
@@ -137,8 +141,6 @@ void MainWindow::slStartCamera()
     Mat frame;
 
     while ( f_stream ) {
-
-
         cap >> frame;
         if (frame.empty()) {
             qDebug() << "frame is empty!";
@@ -351,9 +353,22 @@ void MainWindow::slCloseApplication()
 
 }
 
-void MainWindow::slSelectObject(uint8_t ind_object)
+void MainWindow::slSelectObject(int ind_object)
 {
     indSelectObject = ind_object;
+    qDebug() << "Number of the selected object =" << ind_object;
+}
+
+void MainWindow::slSelectCamera(int ind_camera)
+{
+    qDebug() << "Number of the selected camera =" << ind_camera;
+}
+
+void MainWindow::slChangeModeShowObject()
+{
+    stateShowObject++;
+    if (stateShowObject == 4)
+        stateShowObject = 0;
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -376,15 +391,11 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9){
-        uint8_t nm_key = event->key() - 0x30;
-        qDebug() << "number =" << nm_key;
-        slSelectObject( nm_key );
+        slSelectObject( event->key() - 0x30 );
     }
 
-    if (event->key() == Qt::Key_W){
-        stateShowObject++;
-        if (stateShowObject == 4)
-            stateShowObject = 0;
+    if (event->key() == Qt::Key_W){          // изменение режима отображения объектов
+        slChangeModeShowObject();
     }
 
 
@@ -398,7 +409,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     }
     if (event->key() == Qt::Key_D){          // отображаем камеру 2
         f_Camera = true;
-                stackedWidgets->setCurrentIndex(1);
+        stackedWidgets->setCurrentIndex(1);
     }
     if (event->key() == Qt::Key_F){          // отображаем камеру 3
         f_Camera = true;

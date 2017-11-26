@@ -80,7 +80,10 @@ private slots:
     void slBlockAccess();
     void slReceiveAccessKey(QString key);
     void slCloseApplication();
-    void slSelectObject(uint8_t ind_object);
+    void slSelectObject(int ind_object);
+    void slSelectCamera(int ind_camera);
+    void slChangeModeShowObject();
+
 
 protected:
     void closeEvent(QCloseEvent *event);

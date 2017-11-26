@@ -24,10 +24,11 @@ public:
     void run() override;
 
 signals:
-    void State(const QString &message);
+    void sgState(const QString &message);
     void sgLowVoltage();
     void sgCriticalVoltage();
     void sgSendAccessKey(QString key);
+    void sgPressedFire();
 
 private slots:
     void StateVoltage();
